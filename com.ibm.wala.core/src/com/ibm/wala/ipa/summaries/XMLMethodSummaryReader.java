@@ -115,6 +115,8 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
   private final static int E_ATHROW = 13;
 
   private final static int E_CONSTANT = 14;
+  
+  private final static int E_GETSTATIC = 15;
 
   private final static Map<String, Integer> elementMap = HashMapFactory.make(14);
   static {
@@ -133,6 +135,7 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
     elementMap.put("getfield", new Integer(E_GETFIELD));
     elementMap.put("throw", new Integer(E_ATHROW));
     elementMap.put("constant", new Integer(E_CONSTANT));
+    elementMap.put("getstatic", new Integer(E_GETSTATIC));
   }
 
   //
@@ -316,6 +319,9 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       case E_PUTSTATIC:
         processPutStatic(atts);
         break;
+      case E_GETSTATIC:
+        processGetStatic(atts);
+        break;
       case E_PUTFIELD:
         processPutField(atts);
         break;
@@ -386,6 +392,7 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       case E_NEW:
       case E_POISON:
       case E_PUTSTATIC:
+      case E_GETSTATIC:
       case E_PUTFIELD:
       case E_AASTORE:
       case E_ATHROW:
@@ -677,6 +684,42 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       }
       SSAPutInstruction P = insts.PutInstruction(valueNumber.intValue(), field);
       governingMethod.addStatement(P);
+    }
+    
+    /**
+     * Process an element indicating a putstatic.
+     * 
+     * @param atts
+     */
+    private void processGetStatic(Attributes atts) {
+      Language lang = scope.getLanguage(governingLoader.getLanguage());
+      SSAInstructionFactory insts = lang.instructionFactory();
+
+      // deduce the field written
+      String classString = atts.getValue(A_CLASS);
+      TypeReference type = TypeReference.findOrCreate(governingLoader, TypeName.string2TypeName(classString));
+
+      String fieldString = atts.getValue(A_FIELD);
+      Atom fieldName = Atom.findOrCreateAsciiAtom(fieldString);
+
+      String ftString = atts.getValue(A_FIELD_TYPE);
+      TypeReference fieldType = TypeReference.findOrCreate(governingLoader, TypeName.string2TypeName(ftString));
+
+      FieldReference field = FieldReference.findOrCreate(type, fieldName, fieldType);
+
+      // get the value def'fed
+      String defVar = atts.getValue(A_DEF);
+      if (symbolTable.keySet().contains(defVar)) {
+        Assertions.UNREACHABLE("Cannot def variable twice: " + defVar + " in " + governingMethod);
+      }
+      if (defVar == null) {
+        Assertions.UNREACHABLE("Must specify def for getfield " + governingMethod);
+      }
+      int defNum = nextLocal;
+      symbolTable.put(defVar, new Integer(nextLocal++));
+            
+      SSAGetInstruction G = insts.GetInstruction(defNum, field);
+      governingMethod.addStatement(G);
     }
 
     /**
