@@ -62,6 +62,8 @@ public interface SSAInstructionFactory {
   SSAGetInstruction GetInstruction(int result, int ref, FieldReference field);
 
   SSAGotoInstruction GotoInstruction();
+  
+  SSAGotoInstruction GotoInstruction(int label);
 
   SSAInstanceofInstruction InstanceofInstruction(int result, int ref, TypeReference checkedType);
 

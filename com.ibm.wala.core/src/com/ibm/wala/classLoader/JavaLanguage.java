@@ -198,6 +198,10 @@ public class JavaLanguage extends LanguageImpl implements BytecodeLanguage, Cons
     public SSAGotoInstruction GotoInstruction() {
       return new SSAGotoInstruction();
     }
+    
+    public SSAGotoInstruction GotoInstruction(int label) {
+      return new SSAGotoInstruction(label);
+    }
 
     public SSAInstanceofInstruction InstanceofInstruction(int result, int ref, TypeReference checkedType) {
       return new SSAInstanceofInstruction(result, ref, checkedType);

@@ -14,11 +14,20 @@ package com.ibm.wala.ssa;
  * Unconditional branch instruction for SSA form.
  */
 public class SSAGotoInstruction extends SSAInstruction {
-
+  private int label = -1;
   public SSAGotoInstruction() {
     super();
   }
+  
+  public SSAGotoInstruction(int label) {
+    super();
+    this.label = label;
+  }
 
+  public int getLabel() {
+    return label;
+  }
+  
   @Override
   public SSAInstruction copyForSSA(SSAInstructionFactory insts, int[] defs, int[] uses) {
     return insts.GotoInstruction();
@@ -44,7 +53,7 @@ public class SSAGotoInstruction extends SSAInstruction {
 
   @Override
   public int hashCode() {
-    return 1409; // XXX weak!
+    return 1409+label; // XXX weak!
   }
 
   /*
