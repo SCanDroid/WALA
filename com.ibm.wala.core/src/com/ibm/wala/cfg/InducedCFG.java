@@ -126,14 +126,14 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
       }
       //Needed if we add a dummy entry block
       //Remove if we don't have an empty entry.
-      else if (b.equals(entry())) {
-        BasicBlock bb0 = getBlockForInstruction(0);
-        assert bb0 != null;
-        addNormalEdge(b, bb0);
-      }
-      else {
+//      else if (b.equals(entry())) {
+//        BasicBlock bb0 = getBlockForInstruction(0);
+//        assert bb0 != null;
+//        addNormalEdge(b, bb0);
+//      }
+//      else {
         b.computeOutgoingEdges();
-      }
+//      }
     }
     clearPis(getInstructions());
   }
@@ -186,8 +186,8 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
 
     //TODO: Should we add an empty entryblock like how Shrike implements the cfg?
     //And if we do, will it break WALA?
-    BasicBlock entry = new BasicBlock(-1);
-    addNode(entry);
+//    BasicBlock entry = new BasicBlock(-1);
+//    addNode(entry);
     
     BasicBlock b = null;
     for (int i = 0; i < r.length; i++) {
@@ -548,7 +548,6 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
     }
 
     public int getLastInstructionIndex() {
-      /*
       int exitNumber = InducedCFG.this.getNumber(exit());
       if (getGraphNodeId() == exitNumber) {
         // this is the exit block
@@ -561,19 +560,18 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
         BasicBlock next = getNode(getGraphNodeId() + 1);
         return next.getFirstInstructionIndex() - 1;
       }
-      */
       
-      if (this == entry() || this == exit()) {
-        // these are the special end blocks
-        return -2;
-      }
-      if (getNumber() == (getMaxNumber() - 1)) {
-        // this is the last non-exit block
-        return getInstructions().length - 1;
-      } else {
-        BasicBlock next = getNode(getNumber() + 1);
-        return next.getFirstInstructionIndex() - 1;
-      }
+//      if (this == entry() || this == exit()) {
+//        // these are the special end blocks
+//        return -2;
+//      }
+//      if (getNumber() == (getMaxNumber() - 1)) {
+//        // this is the last non-exit block
+//        return getInstructions().length - 1;
+//      } else {
+//        BasicBlock next = getNode(getNumber() + 1);
+//        return next.getFirstInstructionIndex() - 1;
+//      }
       
     }
 
