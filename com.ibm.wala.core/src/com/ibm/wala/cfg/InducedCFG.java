@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.classLoader.DexCFG.BasicBlock;
 import com.ibm.wala.ipa.callgraph.Context;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
