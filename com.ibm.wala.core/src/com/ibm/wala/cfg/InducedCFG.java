@@ -131,8 +131,10 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
         BasicBlock bb0 = getBlockForInstruction(0);
         assert bb0 != null;
         addNormalEdge(b, bb0);
-      
-      b.computeOutgoingEdges();
+      }
+      else {
+        b.computeOutgoingEdges();
+      }
     }
     clearPis(getInstructions());
   }
@@ -452,7 +454,7 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
     }
 
     private void computeOutgoingEdges() {
-
+      /*
       if (DEBUG) {
         System.err.println(("Block " + this + ": computeOutgoingEdges()"));
       }
@@ -479,6 +481,55 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
         BasicBlock exit = exit();
         addNormalEdgeTo(exit);
       }
+      */
+      
+      if (DEBUG) {
+        System.err.println(("Block " + this + ": computeOutgoingEdges()"));
+      }
+      // TODO: we don't currently model branches
+
+      SSAInstruction last = getInstructions()[getLastInstructionIndex()];
+      boolean handledBranch = false;
+      if (last instanceof SSAGotoInstruction) {
+        SSAGotoInstruction gotoInst = (SSAGotoInstruction)last;
+        int target = gotoInst.getLabel();
+        if (target != -1) {
+          BasicBlock b = getBlockForInstruction(target);
+          addNormalEdgeTo(b);
+          handledBranch = true;
+        }
+      }
+      else if (last instanceof SSASwitchInstruction) {
+        SSASwitchInstruction switchInst = (SSASwitchInstruction)last;
+        int[] targets = switchInst.getTargets();
+        for (int i = 0; i < targets.length; i++) {
+          BasicBlock b = getBlockForInstruction(targets[i]);
+          addNormalEdgeTo(b);
+          handledBranch = true;
+        }
+      }
+      addExceptionalEdges(last);
+      // this CFG is odd in that we assume fallthru might always
+      // happen .. this is because I'm too lazy to code control
+      // flow in all method summaries yet.
+      int normalSuccNodeNumber = getGraphNodeId() + 1;
+      if (!handledBranch) {
+        // if (last.isFallThrough()) {
+        if (DEBUG) {
+          System.err.println(("Add fallthru to " + getNode(getGraphNodeId() + 1)));
+        }
+        addNormalEdgeTo(getNode(normalSuccNodeNumber));
+      }
+      if (pis != null) {
+        updatePiInstrs(normalSuccNodeNumber);
+      }
+      if (last instanceof SSAReturnInstruction) {
+        // link each return instrution to the exit block.
+        BasicBlock exit = exit();
+        addNormalEdgeTo(exit);
+      }
+
+      
     }
 
     /**
@@ -498,6 +549,7 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
     }
 
     public int getLastInstructionIndex() {
+      /*
       int exitNumber = InducedCFG.this.getNumber(exit());
       if (getGraphNodeId() == exitNumber) {
         // this is the exit block
@@ -510,6 +562,20 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
         BasicBlock next = getNode(getGraphNodeId() + 1);
         return next.getFirstInstructionIndex() - 1;
       }
+      */
+      
+      if (this == entry() || this == exit()) {
+        // these are the special end blocks
+        return -2;
+      }
+      if (getNumber() == (getMaxNumber() - 1)) {
+        // this is the last non-exit block
+        return getInstructions().length - 1;
+      } else {
+        BasicBlock next = getNode(getNumber() + 1);
+        return next.getFirstInstructionIndex() - 1;
+      }
+      
     }
 
     public boolean isCatchBlock() {
