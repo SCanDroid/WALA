@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.classLoader.DexCFG.BasicBlock;
 import com.ibm.wala.ipa.callgraph.Context;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
@@ -121,8 +122,16 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
   private void computeEdges() {
     for (Iterator it = iterator(); it.hasNext();) {
       BasicBlock b = (BasicBlock) it.next();
-      if (b.equals(exit()))
+      if (b.equals(exit())) {
         continue;
+      }
+      //Needed if we add a dummy entry block
+      //Remove if we don't have an empty entry.
+      else if (b.equals(entry())) {
+        BasicBlock bb0 = getBlockForInstruction(0);
+        assert bb0 != null;
+        addNormalEdge(b, bb0);
+      
       b.computeOutgoingEdges();
     }
     clearPis(getInstructions());
@@ -174,6 +183,11 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
       }
     }
 
+    //TODO: Should we add an empty entryblock like how Shrike implements the cfg?
+    //And if we do, will it break WALA?
+    BasicBlock entry = new BasicBlock(-1);
+    addNode(entry);
+    
     BasicBlock b = null;
     for (int i = 0; i < r.length; i++) {
       if (r[i]) {
@@ -233,8 +247,8 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
 
     @Override
     public void visitGoto(SSAGotoInstruction instruction) {
-      Assertions.UNREACHABLE("haven't implemented logic for goto yet.");
-      breakBasicBlock(index);
+//      Assertions.UNREACHABLE("haven't implemented logic for goto yet.");      
+      breakBasicBlock(index);      
     }
 
     @Override
@@ -245,12 +259,12 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
 
     @Override
     public void visitSwitch(SSASwitchInstruction instruction) {
-      Assertions.UNREACHABLE("haven't implemented logic for switch yet.");
-      // breakBasicBlock();
-      // int[] targets = instruction.getTargets();
-      // for (int i = 0; i < targets.length; i++) {
-      // r[targets[i]] = true;
-      // }
+//      Assertions.UNREACHABLE("haven't implemented logic for switch yet.");
+       breakBasicBlock(index);
+       int[] targets = instruction.getTargets();
+       for (int i = 0; i < targets.length; i++) {
+       r[targets[i]] = true;
+       }
     }
 
     @Override

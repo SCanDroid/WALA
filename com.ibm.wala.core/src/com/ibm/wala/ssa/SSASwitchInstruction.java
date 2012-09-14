@@ -86,11 +86,14 @@ public class SSASwitchInstruction extends SSAInstruction {
     return val;
   }
 
-  // public int[] getTargets() {
-  // // TODO Auto-generated method stub
-  // Assertions.UNREACHABLE();
-  // return null;
-  // }
+   public int[] getTargets() {
+     int targets[] = new int[casesAndLabels.length / 2 + 1];
+     targets[0] = defaultLabel;
+     for (int i=1; i < targets.length; i++) {
+       targets[i] = casesAndLabels[(i-1)*2 + 1];
+     }
+     return targets;
+   }
 
   public int getTarget(int caseValue) {
     for (int i = 0; i < casesAndLabels.length; i += 2)
