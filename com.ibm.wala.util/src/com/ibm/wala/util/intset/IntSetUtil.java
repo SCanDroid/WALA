@@ -173,36 +173,28 @@ public class IntSetUtil {
     }
   }
 
-  /**
-   * @return index \in [low,high] s.t. data[index] = key, or -1 if not found
+  /** A reimplementation of java.util.Arrays.binarySearch0, recreated due to that method's private visibility
+   * @param data the array
+   * @param key the key to find
+   * @param low the index of the first element to look at
+   * @param high the index of the highest element to look at, inclusive
+   * @return the index of the key, or -1 if not found
    */
-  public static int binarySearch(int[] data, int key, int low, int high) throws IllegalArgumentException {
-    if (data == null) {
-      throw new IllegalArgumentException("null array");
-    }
-    if (data.length == 0) {
-      return -1;
-    }
-    if (low <= high && (low < 0 || high < 0)) {
-      throw new IllegalArgumentException("can't search negative indices " + low + " " + high);
-    }
-    if (high > data.length - 1) {
-      high = data.length - 1;
-    }
-    if (low <= high) {
-      int mid = (low + high) / 2;
-      int midValue = data[mid];
-      if (midValue == key) {
+  public static int binarySearch(int[] data, int key, int low, int high) {
+    while (low <= high) {
+      int mid = (low + high) >>> 1;
+      int midVal = data[mid];
+      
+      if (midVal < key)
+        low = mid + 1;
+      else if (midVal > key)
+        high = mid - 1;
+      else
         return mid;
-      } else if (midValue > key) {
-        return binarySearch(data, key, low, mid - 1);
-      } else {
-        return binarySearch(data, key, mid + 1, high);
-      }
-    } else {
-      return -1;
     }
+    return -1;
   }
+
 
   /**
    * @return Returns the defaultIntSetFactory.
