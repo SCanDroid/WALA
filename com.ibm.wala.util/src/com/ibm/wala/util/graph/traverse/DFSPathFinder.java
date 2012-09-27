@@ -44,7 +44,7 @@ public class DFSPathFinder<T> extends Stack<T> {
   /**
    * an enumeration of all nodes to search from
    */
-  final private Iterator<T> roots;
+  private Iterator<T> roots;
 
   /**
    * An iterator of child nodes for each node being searched
@@ -207,5 +207,11 @@ public class DFSPathFinder<T> extends Stack<T> {
    */
   protected Iterator<? extends T> getConnected(T n) {
     return G.getSuccNodes(n);
+  }
+  
+  public static <T> DFSPathFinder<T> newDFSPathFinder(Graph<T> G, Iterator<T> nodes, Filter<T> f) {
+    DFSPathFinder<T> pf = new DFSPathFinder<T>(G, nodes, f);
+    pf.roots = nodes;
+    return pf;
   }
 }
