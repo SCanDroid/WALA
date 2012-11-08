@@ -12,8 +12,10 @@ package com.ibm.wala.util.io;// 5724-D15
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -100,6 +102,26 @@ public class FileProvider {
         return f;
       }
       throw new FileNotFoundException(fileName);
+    } else if (url.getProtocol().equals("jar")) {
+      // this is a jar url, which causes problems.
+      
+      try {
+        File tmpFile = File.createTempFile("wala", ".txt");
+        tmpFile.deleteOnExit();
+        
+        InputStream in = loader.getResourceAsStream(fileName);
+        OutputStream out = new FileOutputStream(tmpFile);
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = in.read(buffer)) != -1) {
+            out.write(buffer, 0, len);
+        }
+        out.close();
+        return tmpFile;
+      } catch (IOException e) {
+        throw new FileNotFoundException(e.getMessage());
+      }
+
     } else {
       return new File(filePathFromURL(url));
     }
@@ -135,6 +157,7 @@ public class FileProvider {
       throw new IllegalArgumentException("null loader");
     }
     URL url = loader.getResource(fileName);
+    
     if (DEBUG_LEVEL > 0) {
       System.err.println("FileProvider got url: " + url + " for " + fileName);
     }

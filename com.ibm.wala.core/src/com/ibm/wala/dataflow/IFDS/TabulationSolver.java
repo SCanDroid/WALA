@@ -190,6 +190,14 @@ public class TabulationSolver<T, P, F> {
    * @param p a description of the dataflow problem to solve
    * @throws IllegalArgumentException if p is null
    */
+  public static <T, P, F> TabulationSolver<T, P, F> make(TabulationProblem<T, P, F> p, IProgressMonitor pm) {
+    return new TabulationSolver<T, P, F>(p, pm);
+  }
+  
+  /**
+   * @param p a description of the dataflow problem to solve
+   * @throws IllegalArgumentException if p is null
+   */
   public static <T, P, F> TabulationSolver<T, P, F> make(TabulationProblem<T, P, F> p) {
     return new TabulationSolver<T, P, F>(p, null);
   }

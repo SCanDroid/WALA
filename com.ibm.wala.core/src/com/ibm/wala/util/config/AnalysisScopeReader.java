@@ -57,7 +57,7 @@ public class AnalysisScopeReader {
     BufferedReader r = null;
     try {
       File scopeFile = fp.getFile(scopeFileName, javaLoader);
-      assert scopeFile.exists();
+      assert scopeFile.exists() : scopeFile.getAbsolutePath();
 
       String line;
       // assume the scope file is UTF-8 encoded; ASCII files will also be handled properly
