@@ -39,7 +39,8 @@ import com.ibm.wala.util.intset.IntSet;
 import com.ibm.wala.util.intset.MutableSparseIntSet;
 
 /**
- * A view of a control flow graph where each basic block corresponds to exactly one SSA instruction index.
+ * A view of a control flow graph where each basic block corresponds to exactly
+ * one SSA instruction index.
  * 
  * Prototype: Not terribly efficient.
  */
@@ -52,7 +53,8 @@ public class ExplodedControlFlowGraph implements ControlFlowGraph<SSAInstruction
   private final IR ir;
 
   /**
-   * The ith element of this vector is the basic block holding instruction i. this basic block has number i+1.
+   * The ith element of this vector is the basic block holding instruction i.
+   * this basic block has number i+1.
    */
   private final SimpleVector<IExplodedBasicBlock> normalNodes = new SimpleVector<IExplodedBasicBlock>();
 
@@ -134,7 +136,7 @@ public class ExplodedControlFlowGraph implements ControlFlowGraph<SSAInstruction
   }
 
   public List<IExplodedBasicBlock> getExceptionalSuccessors(IExplodedBasicBlock bb) {
-    ExplodedBasicBlock eb = (ExplodedBasicBlock) bb;    
+    ExplodedBasicBlock eb = (ExplodedBasicBlock) bb;
     assert eb != null;
     if (eb.equals(exit)) {
       return Collections.emptyList();
@@ -253,7 +255,7 @@ public class ExplodedControlFlowGraph implements ControlFlowGraph<SSAInstruction
   }
 
   public int getPredNodeCount(IExplodedBasicBlock bb) throws IllegalArgumentException {
-    ExplodedBasicBlock eb = (ExplodedBasicBlock) bb;    
+    ExplodedBasicBlock eb = (ExplodedBasicBlock) bb;
     if (eb == null) {
       throw new IllegalArgumentException("eb == null");
     }
@@ -291,8 +293,10 @@ public class ExplodedControlFlowGraph implements ControlFlowGraph<SSAInstruction
       for (Iterator<ISSABasicBlock> it = ir.getControlFlowGraph().getPredNodes(original); it.hasNext();) {
         ISSABasicBlock s = it.next();
         if (s.isEntryBlock()) {
-          // it's possible for an entry block to have instructions; in this case, add
-          // the exploded basic block for the last instruction in the entry block
+          // it's possible for an entry block to have instructions; in this
+          // case, add
+          // the exploded basic block for the last instruction in the entry
+          // block
           if (s.getLastInstructionIndex() >= 0) {
             result.add(normalNodes.get(s.getLastInstructionIndex()));
           } else {
@@ -412,8 +416,8 @@ public class ExplodedControlFlowGraph implements ControlFlowGraph<SSAInstruction
   }
 
   /**
-   * A basic block with exactly one normal instruction (which may be null), corresponding to a single instruction index in the SSA
-   * instruction array.
+   * A basic block with exactly one normal instruction (which may be null),
+   * corresponding to a single instruction index in the SSA instruction array.
    * 
    * The block may also have phis.
    */
@@ -504,13 +508,17 @@ public class ExplodedControlFlowGraph implements ControlFlowGraph<SSAInstruction
       }
     }
 
+    private int hashCode = 0;
+
     @Override
     public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + instructionIndex;
-      result = prime * result + ((original == null) ? 0 : original.hashCode());
-      return result;
+      if (hashCode == 0) {
+        final int prime = 31;
+        hashCode = 1;
+        hashCode = prime * hashCode + instructionIndex;
+        hashCode = prime * hashCode + ((original == null) ? 0 : original.hashCode());
+      }
+      return hashCode;
     }
 
     @Override
