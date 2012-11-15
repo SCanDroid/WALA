@@ -277,10 +277,14 @@ public class ExplicitCallGraph extends BasicCallGraph implements BytecodeConstan
       return this == obj;
     }
 
+    int hashCode = 0;
+    
     @Override
     public int hashCode() {
-      // TODO: cache?
-      return getMethod().hashCode() * 8681 + getContext().hashCode();
+      if (hashCode == 0) {
+        hashCode = getMethod().hashCode() * 8681 + getContext().hashCode();
+      }
+      return hashCode;
     }
 
     protected MutableSharedBitVectorIntSet getAllTargetNumbers() {
