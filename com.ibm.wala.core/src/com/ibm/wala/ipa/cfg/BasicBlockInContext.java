@@ -22,7 +22,8 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.graph.impl.NodeWithNumber;
 
 /**
- * A helper class to make the ipcfg work correctly with context-sensitive call graphs.
+ * A helper class to make the ipcfg work correctly with context-sensitive call
+ * graphs.
  */
 public final class BasicBlockInContext<T extends ISSABasicBlock> extends NodeWithNumber implements ISSABasicBlock {
   private final T delegate;
@@ -93,13 +94,16 @@ public final class BasicBlockInContext<T extends ISSABasicBlock> extends NodeWit
     return delegate.isExitBlock();
   }
 
+  int hashCode = 0;
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((delegate == null) ? 0 : delegate.hashCode());
-    result = prime * result + ((node == null) ? 0 : node.hashCode());
-    return result;
+    if (hashCode == 0) {
+      final int prime = 31;
+      hashCode = 1;
+      hashCode = prime * hashCode + ((delegate == null) ? 0 : delegate.hashCode());
+      hashCode = prime * hashCode + ((node == null) ? 0 : node.hashCode());
+    }
+    return hashCode;
   }
 
   @Override
