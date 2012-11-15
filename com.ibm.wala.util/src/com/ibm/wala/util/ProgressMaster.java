@@ -53,8 +53,6 @@ public class ProgressMaster implements IProgressMonitor {
     killNanny();
     if (msPerWorkItem >= 1) {
       currentNanny = new Timeout(msPerWorkItem);
-      // don't let nanny thread prevent JVM exit
-      currentNanny.setDaemon(true);
       currentNanny.start();
     }
   }

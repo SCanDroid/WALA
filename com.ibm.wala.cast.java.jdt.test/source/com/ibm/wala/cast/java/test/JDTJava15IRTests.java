@@ -6,14 +6,17 @@
  *****************************************************************************/
 package com.ibm.wala.cast.java.test;
 
+
+
 import org.junit.Test;
+
 
 public class JDTJava15IRTests extends JDTJavaTest {
 
   public JDTJava15IRTests() {
-    super(JDTJavaIRTests.PROJECT);
+    super(JDTJavaIRTests.PROJECT_NAME);
   }
-  
+
   @Test
   public void testAnonGeneNullarySimple() {
     runTest(singlePkgTestSrc("javaonepointfive"), rtJar, simplePkgTestEntryPoint("javaonepointfive"), emptyList, true);

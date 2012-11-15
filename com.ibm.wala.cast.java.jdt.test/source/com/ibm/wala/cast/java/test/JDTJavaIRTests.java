@@ -40,9 +40,10 @@ package com.ibm.wala.cast.java.test;
 import java.util.Collection;
 import java.util.List;
 
-import com.ibm.wala.cast.java.jdt.test.Activator;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+
 import com.ibm.wala.client.AbstractAnalysisEngine;
-import com.ibm.wala.ide.tests.util.EclipseTestUtil.ZippedProjectData;
 
 public class JDTJavaIRTests extends JavaIRTests {
 
@@ -50,21 +51,22 @@ public class JDTJavaIRTests extends JavaIRTests {
  
   public static final String PROJECT_ZIP = "test_project.zip";
   
-  public static final ZippedProjectData PROJECT = new ZippedProjectData(Activator.getDefault(), PROJECT_NAME, PROJECT_ZIP);
-  
-  private final ZippedProjectData project;
-
   public JDTJavaIRTests() {
-    this(PROJECT);
+    super(PROJECT_NAME);
   }
-  
-  private JDTJavaIRTests(ZippedProjectData project) {
-    super(project.projectName);
-    this.project = project;
-   }
+
+  @BeforeClass
+  public static void beforeClass() {
+    JDTJavaTest.beforeClass();
+  }
+
+  @AfterClass
+  public static void afterClass() {
+    JDTJavaTest.afterClass();
+  }
 
   @Override
   protected AbstractAnalysisEngine getAnalysisEngine(final String[] mainClassDescriptors, Collection<String> sources, List<String> libs) {
-    return JDTJavaTest.makeAnalysisEngine(mainClassDescriptors, sources, libs, project);
+    return JDTJavaTest.makeAnalysisEngine(mainClassDescriptors, sources, libs);
   }
 }
