@@ -46,9 +46,14 @@ public final class ConcreteTypeKey implements InstanceKey {
     }
   }
 
+  private int hashCode = 0;
+  
   @Override
   public int hashCode() {
-    return 461 * type.hashCode();
+    if (hashCode == 0) {
+      hashCode = 461 * type.hashCode();
+    } 
+    return hashCode;
   }
 
   @Override
