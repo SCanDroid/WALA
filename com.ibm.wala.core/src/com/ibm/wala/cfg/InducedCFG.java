@@ -272,6 +272,8 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
     public void visitPhi(SSAPhiInstruction instruction) {
       // we can have more than one phi instruction in a row. break the basic block
       // only before the first one.
+      if (index == 0)
+        return;
       if (!(instructions[index - 1] instanceof SSAPhiInstruction)) {
         breakBasicBlock(index - 1);
       }

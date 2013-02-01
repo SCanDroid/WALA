@@ -42,6 +42,7 @@ import com.ibm.wala.ssa.SSAGetInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSAInstructionFactory;
 import com.ibm.wala.ssa.SSANewInstruction;
+import com.ibm.wala.ssa.SSAPhiInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
 import com.ibm.wala.ssa.SSAThrowInstruction;
@@ -120,6 +121,8 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
   private final static int E_GETSTATIC = 15;
   
   private final static int E_AALOAD = 16;
+  
+  private final static int E_PHI = 17;
 
   private final static Map<String, Integer> elementMap = HashMapFactory.make(17);
   static {
@@ -140,6 +143,8 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
     elementMap.put("throw", new Integer(E_ATHROW));
     elementMap.put("constant", new Integer(E_CONSTANT));
     elementMap.put("getstatic", new Integer(E_GETSTATIC));
+    elementMap.put("phi", new Integer(E_PHI));
+
   }
 
   //
@@ -350,6 +355,9 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       case E_CONSTANT:
         processConstant(atts);
         break;
+      case E_PHI:
+        processPhi(atts);
+        break;
       case E_SUMMARY_SPEC:
         break;
       default:
@@ -407,6 +415,7 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       case E_SUMMARY_SPEC:
       case E_RETURN:
       case E_CONSTANT:
+      case E_PHI:
         break;
       default:
         Assertions.UNREACHABLE("Unexpected element: " + name);
@@ -839,6 +848,46 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
         }
       }
     }
+    
+    /**
+     * Process an element indicating a phi statement.
+     * 
+     * @param atts
+     */
+    private void processPhi(Attributes atts) {
+      Language lang = scope.getLanguage(governingLoader.getLanguage());
+      SSAInstructionFactory insts = lang.instructionFactory();
+
+      String defVar = atts.getValue(A_DEF);
+      if (symbolTable.keySet().contains(defVar)) {
+        Assertions.UNREACHABLE("Cannot def variable twice: " + defVar + " in " + governingMethod);
+      }
+      
+            
+      int nParams = Integer.parseInt(atts.getValue(A_NUM_ARGS));
+      int[] params = new int[nParams];
+
+      for (int i = 0; i < params.length; i++) {
+        String argString = atts.getValue(A_ARG + i);
+        Assertions.productionAssertion(argString != null, "unspecified arg in phi inst " + governingMethod);
+        Integer valueNumber = symbolTable.get(argString);
+        if (valueNumber == null) {
+          Assertions.UNREACHABLE("Cannot lookup value: " + argString);
+        }
+        params[i] = valueNumber.intValue();
+      }
+      
+      int defNum = nextLocal;
+      symbolTable.put(defVar, new Integer(nextLocal++));
+      
+
+      SSAPhiInstruction phiInst = insts.PhiInstruction(defNum, params);
+      governingMethod.addStatement(phiInst);
+      
+      
+ 
+    }
+    
 
     /**
      * @param atts
