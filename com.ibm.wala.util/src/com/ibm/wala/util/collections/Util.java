@@ -76,6 +76,18 @@ public class Util {
     w.close();
     return traceDump.toString();
   }
+  
+  /**
+   * Return those elements of <code>c</code> that are assignable to <code>klass</code>.
+   */
+  @SuppressWarnings("unchecked")
+  public static <S, T> Set<T> filterByType(Iterable<S> c, Class<T> klass) {
+    Set<T> result = HashSetFactory.make();
+    for(S s : c)
+      if(klass.isAssignableFrom(s.getClass()))
+        result.add((T)s);
+    return result;
+  }
 
   /**
    * Test whether <em>some</em> element of the given {@link Collection} satisfies the given {@link Predicate}.

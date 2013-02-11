@@ -338,9 +338,7 @@ public class ForInContextSelector implements ContextSelector {
       }
     } else if(receiver.length > index) {
       Frequency f = usesFirstArgAsPropertyName(callee);
-      if(f == Frequency.ALWAYS) {
-        return new ForInContext(baseContext, simulateToString(caller.getClassHierarchy(), receiver[index]));
-      } else if(f == Frequency.SOMETIMES) {
+      if(f == Frequency.ALWAYS|| f == Frequency.SOMETIMES) {
         if(receiver[index] == null) {
           IClass undef = caller.getClassHierarchy().lookupClass(JavaScriptTypes.Undefined);
           return new ForInContext(baseContext, new ConcreteTypeKey(undef));

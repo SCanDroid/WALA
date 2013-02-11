@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.ibm.wala.cast.tree.CAstAnnotation;
 import com.ibm.wala.cast.tree.CAstControlFlowMap;
 import com.ibm.wala.cast.tree.CAstEntity;
 import com.ibm.wala.cast.tree.CAstNode;
@@ -25,7 +26,7 @@ import com.ibm.wala.cast.tree.CAstQualifier;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.cast.tree.CAstType;
-import com.ibm.wala.cast.tree.impl.CAstRewriter.Rewrite;
+import com.ibm.wala.cast.tree.rewrite.CAstRewriter.Rewrite;
 import com.ibm.wala.util.collections.EmptyIterator;
 import com.ibm.wala.util.collections.HashMapFactory;
 import com.ibm.wala.util.collections.HashSetFactory;
@@ -162,6 +163,11 @@ class ExtractedFunction implements CAstEntity {
 	}
 
 	@Override
+  public Collection<CAstAnnotation> getAnnotations() {
+   return null;
+  }
+
+  @Override
 	public String toString() {
 		return "<JS function " + name + ">";
 	}
