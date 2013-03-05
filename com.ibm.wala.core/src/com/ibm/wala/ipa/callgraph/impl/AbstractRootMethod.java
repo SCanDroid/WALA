@@ -33,12 +33,14 @@ import com.ibm.wala.shrikeBT.IInvokeInstruction;
 import com.ibm.wala.ssa.ConstantValue;
 import com.ibm.wala.ssa.IR;
 import com.ibm.wala.ssa.SSAArrayStoreInstruction;
+import com.ibm.wala.ssa.SSAGetInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSAInstructionFactory;
 import com.ibm.wala.ssa.SSAInvokeInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.ssa.SSAOptions;
 import com.ibm.wala.ssa.SSAPhiInstruction;
+import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
@@ -324,10 +326,24 @@ public abstract class AbstractRootMethod extends SyntheticMethod {
     statements.add(insts.GetInstruction(result, object, ref));
     return result;
   }
+  
+  public SSAPutInstruction addPutInstance(FieldReference ref, int object, int value) {
+    final SSAPutInstruction result = insts.PutInstruction(object, value, ref);
+    statements.add(result);
+    cache.invalidate(this, Everywhere.EVERYWHERE);
+    return result;
+  }
 
   public int addGetStatic(FieldReference ref) {
     int result = nextLocal++;
     statements.add(insts.GetInstruction(result, ref));
+    return result;
+  }  
+  
+  public SSAPutInstruction addPutStatic(FieldReference ref, int value) {
+    final SSAPutInstruction result = insts.PutInstruction(value, ref);
+    statements.add(result);
+    cache.invalidate(this, Everywhere.EVERYWHERE);
     return result;
   }
 
